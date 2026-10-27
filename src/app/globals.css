@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * Design tokens.
+ * Names follow shadcn/ui conventions so generated components work unchanged.
+ * Palette: slate ink chrome, bottle-green primary, one colour per restaurant role.
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: #f4f6f8;
+  --foreground: #17202b;
+  --card: #ffffff;
+  --card-foreground: #17202b;
+  --popover: #ffffff;
+  --popover-foreground: #17202b;
+  --primary: #22594a;
+  --primary-foreground: #f4f8f6;
+  --secondary: #e8ecf0;
+  --secondary-foreground: #17202b;
+  --muted: #eef1f4;
+  --muted-foreground: #5b6675;
+  --accent: #e6efeb;
+  --accent-foreground: #17202b;
+  --destructive: #b4233c;
+  --warning: #c98a12;
+  --success: #2f7d4f;
+  --border: #dde2e8;
+  --input: #cfd6de;
+  --ring: #22594a;
+
+  --sidebar: #17202b;
+  --sidebar-foreground: #c9d1db;
+  --sidebar-accent: #243142;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #2a3746;
+
+  /* One colour per role; used for badges, calendar blocks and charts. */
+  --role-chef: #6d3f99;
+  --role-cook: #b8572a;
+  --role-server: #1a7f8e;
+  --role-bartender: #a87c12;
+  --role-host: #3557a8;
+  --role-dishwasher: #5c6b7a;
+}
+
+@theme inline {
+  --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+
+  --color-role-chef: var(--role-chef);
+  --color-role-cook: var(--role-cook);
+  --color-role-server: var(--role-server);
+  --color-role-bartender: var(--role-bartender);
+  --color-role-host: var(--role-host);
+  --color-role-dishwasher: var(--role-dishwasher);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "tnum" 0;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
