@@ -1,7 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Play, TrendingDown, CheckCircle, Clock, DollarSign, ShieldAlert, Award } from "lucide-react";
+import {
+  Play,
+  TrendingDown,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  ShieldAlert,
+  Award,
+  Sliders,
+  RotateCcw,
+} from "lucide-react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -23,12 +33,30 @@ export default function OptimizationPage() {
   const { data, runComparison } = useAppStore();
   const [isRunning, setIsRunning] = useState(false);
 
+  // Hyperparameter states (Prompt 5)
+  const [populationSize, setPopulationSize] = useState<number>(40);
+  const [generations, setGenerations] = useState<number>(60);
+  const [mutationRate, setMutationRate] = useState<number>(0.05);
+  const [tournamentSize, setTournamentSize] = useState<number>(3);
+
   const comparison = data.lastComparison;
+
+  function handleResetParams() {
+    setPopulationSize(40);
+    setGenerations(60);
+    setMutationRate(0.05);
+    setTournamentSize(3);
+  }
 
   function handleRun() {
     setIsRunning(true);
     setTimeout(() => {
-      runComparison();
+      runComparison({
+        populationSize,
+        generations,
+        mutationRate,
+        tournamentSize,
+      });
       setIsRunning(false);
     }, 60);
   }
@@ -71,12 +99,111 @@ export default function OptimizationPage() {
             <CardDescription>Multi-generation evolutionary search over candidate schedules.</CardDescription>
           </CardHeader>
           <CardContent className="text-sm leading-relaxed text-muted-foreground">
-            Maintains a population of 40 candidate schedules. Evaluates fitness with penalty weights
+            Maintains a population of candidate schedules. Evaluates fitness with penalty weights
             for uncovered slots, rest-window breaches, and payroll cost. Breeds successive generations
             via tournament selection, uniform crossover, and stochastic mutation to reach optimal balance.
           </CardContent>
         </Card>
       </div>
+
+      {/* Algorithm Hyperparameter Controls (Prompt 5) */}
+      <Card className="mt-6">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sliders className="h-4 w-4 text-primary" />
+              <CardTitle className="text-base">Algorithm Hyperparameters</CardTitle>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleResetParams}
+              className="text-xs h-7 text-muted-foreground hover:text-foreground"
+            >
+              <RotateCcw className="h-3 w-3 mr-1" />
+              Reset defaults
+            </Button>
+          </div>
+          <CardDescription>
+            Tune evolutionary parameters before running optimization to analyze convergence speed and schedule quality.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Population Size */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-foreground">Population Size</span>
+                <span className="font-mono font-semibold text-primary">{populationSize}</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                step="5"
+                value={populationSize}
+                onChange={(e) => setPopulationSize(Number(e.target.value))}
+                className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <p className="text-[11px] text-muted-foreground">Candidate schedules per generation (10 to 100).</p>
+            </div>
+
+            {/* Generations */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-foreground">Generations</span>
+                <span className="font-mono font-semibold text-primary">{generations}</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="120"
+                step="5"
+                value={generations}
+                onChange={(e) => setGenerations(Number(e.target.value))}
+                className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <p className="text-[11px] text-muted-foreground">Iterations of evolutionary breeding (10 to 120).</p>
+            </div>
+
+            {/* Mutation Rate */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-foreground">Mutation Rate</span>
+                <span className="font-mono font-semibold text-primary">{(mutationRate * 100).toFixed(0)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0.01"
+                max="0.20"
+                step="0.01"
+                value={mutationRate}
+                onChange={(e) => setMutationRate(Number(e.target.value))}
+                className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <p className="text-[11px] text-muted-foreground">Probability of stochastic slot mutation (1% to 20%).</p>
+            </div>
+
+            {/* Tournament Size */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-foreground">Tournament Size</span>
+                <span className="font-mono font-semibold text-primary">{tournamentSize}</span>
+              </div>
+              <input
+                type="range"
+                min="2"
+                max="6"
+                step="1"
+                value={tournamentSize}
+                onChange={(e) => setTournamentSize(Number(e.target.value))}
+                className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              />
+              <p className="text-[11px] text-muted-foreground">Selection pressure size per parent round (2 to 6).</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {comparison ? (
         <div className="mt-8 space-y-8">
@@ -212,7 +339,7 @@ export default function OptimizationPage() {
                       {comparison.genetic.runtimeMs} ms
                     </td>
                     <td className="px-6 py-3.5 text-right font-sans text-xs text-muted-foreground">
-                      60 gens
+                      {comparison.genetic.params?.generations ?? generations} gens (pop {comparison.genetic.params?.populationSize ?? populationSize})
                     </td>
                   </tr>
                 </tbody>
@@ -224,10 +351,17 @@ export default function OptimizationPage() {
           {comparison.genetic.convergence && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Genetic Algorithm Convergence</CardTitle>
-                <CardDescription>
-                  Tracking generation-by-generation reduction in penalty score (lower is better).
-                </CardDescription>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <CardTitle className="text-base">Genetic Algorithm Convergence</CardTitle>
+                    <CardDescription>
+                      Tracking generation-by-generation reduction in penalty score (lower is better).
+                    </CardDescription>
+                  </div>
+                  <div className="text-xs font-mono text-muted-foreground bg-muted/50 px-2.5 py-1 rounded">
+                    Pop: {comparison.genetic.params?.populationSize ?? populationSize} | Gen: {comparison.genetic.params?.generations ?? generations} | Mut: {((comparison.genetic.params?.mutationRate ?? mutationRate) * 100).toFixed(0)}%
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
@@ -265,8 +399,8 @@ export default function OptimizationPage() {
                       type="monotone"
                       dataKey="bestFitness"
                       name="Best Fitness"
-                      stroke="#2563eb"
-                      strokeWidth={2.5}
+                      stroke="var(--color-primary, #4f46e5)"
+                      strokeWidth={2}
                       dot={false}
                     />
                     <Line
@@ -283,15 +417,7 @@ export default function OptimizationPage() {
             </Card>
           )}
         </div>
-      ) : (
-        <div className="mt-6 rounded-xl border border-dashed bg-card/50 px-6 py-12 text-center">
-          <p className="font-medium">No comparison run yet</p>
-          <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
-            Click Run comparison to evaluate both algorithms side by side on current staff availability
-            and demand figures.
-          </p>
-        </div>
-      )}
+      ) : null}
     </>
   );
 }

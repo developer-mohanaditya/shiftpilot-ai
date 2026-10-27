@@ -4,8 +4,10 @@ import React, { createContext, useContext, useSyncExternalStore } from "react";
 import {
   type AlgorithmId,
   type AppData,
+  type GeneticAlgorithmParams,
   type OptimizationComparison,
   type Schedule,
+  type ShiftAssignment,
 } from "@/domain/types";
 import { createSampleData } from "@/data/sample-restaurant";
 import { runBaseline } from "@/algorithms/baseline";
@@ -74,10 +76,11 @@ function getServerSnapshot(): AppData {
 
 interface AppStoreContextType {
   data: AppData;
-  generateSchedule: (algorithm?: AlgorithmId) => Schedule;
-  runComparison: () => OptimizationComparison;
+  generateSchedule: (algorithm?: AlgorithmId, gaParams?: Partial<GeneticAlgorithmParams>) => Schedule;
+  runComparison: (gaParams?: Partial<GeneticAlgorithmParams>) => OptimizationComparison;
   applyPredictedDemand: () => void;
   resetData: () => void;
+  updateAssignments: (assignments: ShiftAssignment[]) => void;
 }
 
 const AppStoreContext = createContext<AppStoreContextType | null>(null);
@@ -85,12 +88,15 @@ const AppStoreContext = createContext<AppStoreContextType | null>(null);
 export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const data = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  function generateSchedule(algorithm: AlgorithmId = "genetic"): Schedule {
+  function generateSchedule(
+    algorithm: AlgorithmId = "genetic",
+    gaParams?: Partial<GeneticAlgorithmParams>,
+  ): Schedule {
     let run;
     if (algorithm === "baseline") {
       run = runBaseline(data.restaurant, data.employees, data.requirements);
     } else {
-      run = runGeneticAlgorithm(data.restaurant, data.employees, data.requirements);
+      run = runGeneticAlgorithm(data.restaurant, data.employees, data.requirements, gaParams);
     }
 
     const nextData: AppData = {
@@ -101,9 +107,9 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     return run.schedule;
   }
 
-  function runComparison(): OptimizationComparison {
+  function runComparison(gaParams?: Partial<GeneticAlgorithmParams>): OptimizationComparison {
     const baseline = runBaseline(data.restaurant, data.employees, data.requirements);
-    const genetic = runGeneticAlgorithm(data.restaurant, data.employees, data.requirements);
+    const genetic = runGeneticAlgorithm(data.restaurant, data.employees, data.requirements, gaParams);
 
     const comparison: OptimizationComparison = {
       runAt: new Date().toISOString(),
@@ -131,6 +137,19 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     setStoreData(nextData);
   }
 
+  function updateAssignments(assignments: ShiftAssignment[]) {
+    const nextData: AppData = {
+      ...data,
+      schedule: {
+        id: `sched_manual_${Date.now()}`,
+        source: "manual",
+        createdAt: new Date().toISOString(),
+        assignments,
+      },
+    };
+    setStoreData(nextData);
+  }
+
   function resetData() {
     const fresh = createSampleData();
     setStoreData(fresh);
@@ -144,6 +163,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
         runComparison,
         applyPredictedDemand,
         resetData,
+        updateAssignments,
       }}
     >
       {children}
