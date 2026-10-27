@@ -4,6 +4,7 @@ import "@fontsource-variable/bricolage-grotesque";
 import "./globals.css";
 
 import { AppShell } from "@/components/layout/app-shell";
+import { Providers } from "@/components/providers";
 import { sampleRestaurant } from "@/data/sample-restaurant";
 
 export const metadata: Metadata = {
@@ -15,11 +16,13 @@ export const metadata: Metadata = {
     "Weekly restaurant staff scheduling with a baseline heuristic and a genetic algorithm.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="antialiased">
       <body>
-        <AppShell restaurantName={sampleRestaurant.name}>{children}</AppShell>
+        <Providers>
+          <AppShell restaurantName={sampleRestaurant.name}>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );
