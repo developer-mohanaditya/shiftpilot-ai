@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, GitCompareArrows, LayoutDashboard, Users } from "lucide-react";
+import { CalendarDays, Database, GitCompareArrows, LayoutDashboard, Users } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/employees", label: "Employees", icon: Users },
   { href: "/schedule", label: "Schedule", icon: CalendarDays },
   { href: "/optimization", label: "Optimization", icon: GitCompareArrows },
+  { href: "/datasets", label: "Datasets & ML", icon: Database },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {

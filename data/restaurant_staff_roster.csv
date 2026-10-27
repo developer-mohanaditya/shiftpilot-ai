@@ -1,0 +1,16 @@
+id,first_name,last_name,primary_role,all_roles,hourly_rate_eur,min_hours_per_week,max_hours_per_week
+emp-01,Camille,Moreau,chef,"chef;cook",21.5,30,39
+emp-02,Julien,Barbier,chef,"chef;cook",18.75,24,35
+emp-03,Inès,Haddad,cook,"cook",15.2,20,35
+emp-04,Karim,Belkacem,cook,"cook",14.8,20,35
+emp-05,Antoine,Lefèvre,cook,"cook;server",14.5,15,30
+emp-06,Léa,Marchand,server,"server;bartender",15.8,25,35
+emp-07,Maxime,Roux,server,"server;bartender",15.2,20,35
+emp-08,Chloé,Dubois,server,"server",14.2,15,30
+emp-09,Alexandre,Fontaine,server,"server",14,15,25
+emp-10,Emma,Girard,server,"server",13.8,12,20
+emp-11,Thomas,Mercier,server,"server;cook",14.1,15,25
+emp-12,Sarah,Benali,bartender,"bartender;server",16.5,20,35
+emp-13,Lucas,Chevalier,bartender,"bartender",15,15,25
+emp-14,Manon,Vidal,server,"server",13.8,10,20
+emp-15,Nicolas,Perrin,cook,"cook",14.6,15,30
