@@ -13,7 +13,7 @@
 
 | Member | Email | Primary Responsibilities |
 | :--- | :--- | :--- |
-| **Mohan Aditya Sadhanala** | b00837949@essec.edu | System architecture, predictive regression model, genetic algorithm optimizer, state persistence, full-stack Next.js deployment. |
+| **Mohan Aditya Sadhanala** | mohanaditya.sadhanala@essec.edu | System architecture, predictive regression model, genetic algorithm optimizer, state persistence, full-stack Next.js deployment. |
 | **Oscar Day** | oscar.day@essec.edu | Domain data models, greedy baseline benchmark heuristic, initial UI layout. |
 | **Louise Calmon** | louise.calmon@essec.edu | Operations research constraints, French labor law compliance rules, metrics validation. |
 | **Suzanne Eck** | suzanne.eck@essec.edu | Hospitality domain scenarios, penalty weight formulations, cost benchmark analysis. |
