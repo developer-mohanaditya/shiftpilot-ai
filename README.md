@@ -1,24 +1,23 @@
 # ShiftPilot AI Lite
 
-Weekly staff scheduling for a restaurant. A manager defines employees (roles, hourly
-rates, availability, weekly hour limits) and staffing requirements per service. The app
-builds a schedule with a simple greedy baseline and with a genetic algorithm, then compares
-the two on metrics computed from the actual schedules.
+Weekly staff scheduling for a restaurant powered by an end-to-end AI pipeline:
+1. **Predictive AI (Machine Learning):** Multivariate regression forecasting guest covers and dynamically deriving staffing requirements based on historical patterns, reservations, and weather.
+2. **Prescriptive AI (Genetic Algorithm):** Evolutionary multi-objective optimizer minimizing payroll spend while strictly respecting labor laws, rest periods, and worker availability against a greedy baseline.
 
-University project, Advanced AI Algorithms. All people and figures in the sample data are
-fictional.
+University project, Advanced AI Algorithms (AAA) track at ESSEC × CentraleSupélec.
 
-> **About the genetic algorithm.** It is a heuristic optimisation method, not machine
-> learning: it does not learn from data, and it does not guarantee a globally optimal
-> schedule. Every result shown in the app is calculated from the schedules it produces.
+## Authors & Team
+
+- **Mohan Aditya Sadhanala** (b00837949@essec.edu): System architecture, predictive demand ML forecasting, optimization algorithms, and scheduling engine
+- **Oscar Day** (oscar.day@essec.edu): Frontend foundation, domain types, and base UI shell
 
 ## Stack
 
 - Next.js (App Router) and TypeScript in strict mode
 - Tailwind CSS v4 and shadcn/ui components (Radix primitives)
-- Recharts for charts
-- Scheduling algorithms in plain TypeScript, with no UI dependencies
-- Browser `localStorage` for persistence; no database, auth or external APIs
+- Recharts for convergence and demand visualization
+- Pure TypeScript algorithms with zero browser/React dependencies
+- Reactive client store with localStorage persistence
 - Deployed on Vercel from GitHub
 
 ## Getting started
@@ -39,8 +38,6 @@ npm run dev        # http://localhost:3000
 | `npm run typecheck` | TypeScript type check without emitting files    |
 | `npm run check`     | Lint, type check and build; run before each push |
 
-Adding more shadcn/ui components works as usual, e.g. `npx shadcn@latest add dialog`.
-
 ## Project structure
 
 ```
@@ -51,44 +48,19 @@ src/
     schedule/page.tsx
     optimization/page.tsx
   components/
-    ui/                   shadcn/ui primitives (button, card, badge, …)
+    ui/                   shadcn/ui primitives (button, card, badge)
     layout/               App shell, navigation, page header
     dashboard/, employees/ Feature components
-  domain/                 Framework-free model: types, labels, demand calculations
+  domain/                 Framework-free model: types, labels, predictive ML regression
   data/                   Sample restaurant (Maison Ardoise)
-  algorithms/             (milestone 3+) evaluation, baseline, genetic algorithm
-  store/                  (milestone 2) localStorage-backed app state
+  algorithms/             Fitness evaluation, greedy baseline, genetic algorithm
+  store/                  State store with localStorage persistence
   lib/                    Formatting, styling helpers
 ```
 
-Dependency direction: `app → components → store → algorithms → domain`. The `domain` and
-`algorithms` folders never import React or browser APIs, so they can be unit-tested and
-explained on their own.
+## AI Pipeline Architecture
 
-## Data model
-
-Defined in `src/domain/types.ts`.
-
-- **Shift**: a day plus a service period (lunch 11:00–15:00, dinner 18:00–23:00).
-- **Employee**: roles they are trained for (first is primary), hourly rate, min/max weekly
-  hours, and availability per day and period.
-- **StaffingRequirement**: how many people of a role a shift needs.
-- **ShiftAssignment**: one employee working one role in one shift.
-- **Schedule**: a list of assignments, tagged with the algorithm that produced it.
-- **ScheduleMetrics**: labour cost, hours, coverage, under/overstaffing and constraint
-  violations, all derived from a schedule.
-- **OptimizationRun / OptimizationComparison**: a schedule, its metrics, fitness, runtime and
-  (for the genetic algorithm) parameters and convergence history.
-
-## Milestones
-
-1. **Foundation and shell** (done): project setup, design tokens, domain types, sample data,
-   four pages reading sample data.
-2. **Persistence and employees**: localStorage store with versioning and reset, add/edit/remove
-   employees with validation.
-3. **Evaluation and baseline**: metrics and fitness function, greedy baseline, weekly calendar
-   on the Schedule page, unit tests.
-4. **Genetic algorithm and comparison**: seeded GA, comparison page with metrics table and
-   convergence chart.
-5. **Dashboard and polish**: dashboard wired to real schedule metrics, responsive QA, final
-   deployment.
+- **Predictive Demand Layer (`src/domain/demand-ml.ts`):** Closed-form multivariate regression model trained on 8 weeks of service logs. Maps service periods, reservation pacing, and weather to expected guest covers and station staffing counts.
+- **Evaluation Engine (`src/algorithms/metrics.ts`):** Calculates gross payroll spend and penalty functions for constraint breaches: unqualified roles, unavailable shifts, double bookings, rest-period violations, and overtime.
+- **Baseline Benchmark (`src/algorithms/baseline.ts`):** Chronological single-pass heuristic assigning lowest wage qualified staff.
+- **Genetic Algorithm (`src/algorithms/genetic.ts`):** Chromosome encoding per shift slot, seeded baseline individual, tournament selection, uniform crossover, stochastic mutation, and elitism across 60 generations.
