@@ -4,6 +4,7 @@ import React, { createContext, useContext, useSyncExternalStore } from "react";
 import {
   type AlgorithmId,
   type AppData,
+  type Employee,
   type GeneticAlgorithmParams,
   type OptimizationComparison,
   type Schedule,
@@ -81,6 +82,8 @@ interface AppStoreContextType {
   applyPredictedDemand: () => void;
   resetData: () => void;
   updateAssignments: (assignments: ShiftAssignment[]) => void;
+  addEmployee: (employee: Omit<Employee, "id">) => void;
+  deleteEmployee: (employeeId: string) => void;
 }
 
 const AppStoreContext = createContext<AppStoreContextType | null>(null);
@@ -150,6 +153,32 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     setStoreData(nextData);
   }
 
+  function addEmployee(employeeData: Omit<Employee, "id">) {
+    const newEmployee: Employee = {
+      ...employeeData,
+      id: `emp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    };
+    const nextData: AppData = {
+      ...data,
+      employees: [...data.employees, newEmployee],
+    };
+    setStoreData(nextData);
+  }
+
+  function deleteEmployee(employeeId: string) {
+    const nextData: AppData = {
+      ...data,
+      employees: data.employees.filter((e) => e.id !== employeeId),
+      schedule: data.schedule
+        ? {
+            ...data.schedule,
+            assignments: data.schedule.assignments.filter((a) => a.employeeId !== employeeId),
+          }
+        : null,
+    };
+    setStoreData(nextData);
+  }
+
   function resetData() {
     const fresh = createSampleData();
     setStoreData(fresh);
@@ -164,6 +193,8 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
         applyPredictedDemand,
         resetData,
         updateAssignments,
+        addEmployee,
+        deleteEmployee,
       }}
     >
       {children}
